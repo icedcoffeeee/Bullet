@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 .text-primary {
-    @apply text-primary-900 dark:text-primary-200
+  @apply text-primary-900 dark:text-primary-200 font-sans;
 }

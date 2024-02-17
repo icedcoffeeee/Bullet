@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import defaultTheme from "tailwindcss/defaultTheme";
 import colors from "tailwindcss/colors";
 
 export default {
@@ -7,9 +8,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: colors.zinc,
-        secondary: colors.slate[800],
-        tertiary: colors.orange[500],
+        primary: colors.neutral,
+        secondary: colors.zinc[800],
+        tertiary: colors.yellow[500],
+      },
+      fontFamily: {
+        sans: ['JosefinSans_400Regular', ...defaultTheme.fontFamily.sans]
       }
     },
   },
