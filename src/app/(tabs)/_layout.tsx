@@ -1,9 +1,12 @@
-import { BG_COLOR, COLORS, ISLIGHT, THEME, TX_COLOR } from "@/lib/theme";
+import { COLORS, THEME, useTheme } from "@/lib/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Layout() {
+  const { theme, bg_color, tx_color } = useTheme(
+    ({ theme, bg_color, tx_color }) => ({ theme, bg_color, tx_color }),
+  );
   const { top } = useSafeAreaInsets();
 
   const pages: {
@@ -22,13 +25,13 @@ export default function Layout() {
       sceneContainerStyle={{
         padding: 20,
         paddingTop: 20 + top,
-        backgroundColor: BG_COLOR(),
+        backgroundColor: bg_color,
       }}
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: TX_COLOR(),
+        tabBarActiveTintColor: tx_color,
         tabBarStyle: {
-          backgroundColor: COLORS.primary[ISLIGHT() ? 300 : 700],
+          backgroundColor: COLORS.primary[theme === "light" ? 700 : 300],
           borderTopWidth: 0,
         },
         tabBarLabelStyle: { fontFamily: THEME.fontFamily.sans[0] },

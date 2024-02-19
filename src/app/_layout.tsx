@@ -1,13 +1,12 @@
 import "@/global.css";
 import { fontsLoaded } from "@/lib/fonts";
-import { BG_COLOR } from "@/lib/theme";
+import { useTheme } from "@/lib/theme";
 import { SplashScreen, Stack } from "expo-router";
-import { Appearance } from "react-native";
 
 SplashScreen.preventAutoHideAsync(); // hidden on font load
 
 export default function Layout() {
-  Appearance.setColorScheme("dark");
+  const bg_color = useTheme((state) => state.bg_color);
   if (!fontsLoaded()) return null;
 
   const pages = [
@@ -18,11 +17,10 @@ export default function Layout() {
   return (
     <Stack
       screenOptions={{
-        statusBarColor: "dark",
         statusBarTranslucent: true,
         headerShown: false,
         contentStyle: {
-          backgroundColor: BG_COLOR(),
+          backgroundColor: bg_color,
         },
       }}
     >
