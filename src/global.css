@@ -5,3 +5,7 @@
 .text-primary {
   @apply text-primary-900 dark:text-primary-200 font-sans;
 }
+
+.B {
+  @apply border border-red-500;
+}
