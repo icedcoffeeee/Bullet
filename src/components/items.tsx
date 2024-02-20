@@ -1,6 +1,6 @@
-import { useTheme } from "@/lib/theme";
+import { COLORS, useTheme } from "@/lib/theme";
 import { icons } from "lucide-react-native";
-import { useState } from "react";
+import { ComponentProps, useState } from "react";
 import { Pressable, TextInput, View } from "react-native";
 import { Swipeable, gestureHandlerRootHOC } from "react-native-gesture-handler";
 
@@ -26,20 +26,25 @@ export function Item({
   const Gestures = gestureHandlerRootHOC(View);
   const backgroundColor = useTheme(({ bg_color }) => bg_color);
 
-  const [content, setContent] = useState(currentContent);
   return (
     <Gestures>
       <Swipeable
-        renderLeftActions={() => <ItemButton itemType={ItemType.DELEGATED} />}
-        renderRightActions={() => <ItemButton itemType={ItemType.MIGRATED} />}
+        renderLeftActions={() => (
+          <ItemButton
+            itemType={ItemType.DELEGATED}
+            style={{ backgroundColor: COLORS.secondary }}
+          />
+        )}
+        renderRightActions={() => (
+          <ItemButton
+            itemType={ItemType.MIGRATED}
+            style={{ backgroundColor: COLORS.secondary }}
+          />
+        )}
       >
         <View className="flex-row items-center" style={{ backgroundColor }}>
           <ItemButton itemType={currentType} />
-          <TextInput
-            value={content}
-            onChangeText={setContent}
-            className="text-primary text-2xl"
-          />
+          <ItemContent currentContent={currentContent} />
         </View>
       </Swipeable>
       {children && (
@@ -53,7 +58,10 @@ export function Item({
   );
 }
 
-export function ItemButton({ itemType: currentType }: { itemType?: ItemType }) {
+export function ItemButton({
+  itemType: currentType,
+  ...pressable
+}: { itemType?: ItemType } & ComponentProps<typeof Pressable>) {
   const tx_color = useTheme(({ tx_color }) => tx_color);
   const [type, setType] = useState(currentType);
 
@@ -78,8 +86,24 @@ export function ItemButton({ itemType: currentType }: { itemType?: ItemType }) {
   const Icon = icons[iconNames[type] ?? "Plus"];
 
   return (
-    <Pressable className="rounded self-start p-2" onPress={handleItemPress}>
+    <Pressable
+      className="rounded self-start p-2"
+      onPress={handleItemPress}
+      {...pressable}
+    >
       <Icon color={tx_color} />
     </Pressable>
+  );
+}
+
+function ItemContent({ currentContent }: { currentContent: string }) {
+  const [content, setContent] = useState(currentContent);
+
+  return (
+    <TextInput
+      value={content}
+      onChangeText={setContent}
+      className="text-primary text-2xl"
+    />
   );
 }
