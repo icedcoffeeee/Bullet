@@ -18,7 +18,6 @@ export default function Page() {
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
 
-
   return (
     <View className="p-[20px] flex-1 justify-center gap-3">
       <Text className="text-3xl font-['JosefinSans\_400Regular']">Bullet</Text>
@@ -60,27 +59,27 @@ function LoginInput({ className, ...props }: TextInputProps) {
 }
 
 function LoginButton({ className, ...props }: PressableProps) {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   return (
     <Pressable
       onPress={() => {
-        if (loading) return
-        setLoading(true)
+        if (loading) return;
+        setLoading(true);
         setTimeout(() => {
-          setLoading(false)
-          router.push("day")
-        }, 1000)
+          setLoading(false);
+          router.push("day");
+        }, 1000);
       }}
-      className={twMerge("bg-neutral-500 p-3 max-w-min rounded items-center", className)}
+      className={twMerge(
+        "bg-neutral-500 p-3 max-w-min rounded items-center",
+        className,
+      )}
       style={{ opacity: loading ? 0.5 : 1 }}
     >
       <Text>
-        {loading ?
-          <ActivityIndicator size={19} color={'white'} /> :
-          "Log In"
-        }
+        {loading ? <ActivityIndicator size={19} color={"white"} /> : "Log In"}
       </Text>
     </Pressable>
-  )
+  );
 }

@@ -4,7 +4,7 @@ import { View } from "react-native";
 export default function Page() {
   return (
     <View>
-      <Text className="text-xl">Day</Text>
+      <Text className="text-2xl">Day</Text>
     </View>
   );
 }

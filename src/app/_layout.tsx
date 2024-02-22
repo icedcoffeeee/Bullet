@@ -6,7 +6,7 @@ import colors from "tailwindcss/colors";
 SplashScreen.preventAutoHideAsync(); // hidden on font load
 
 export default function Layout() {
-  if (!loadFonts()) return null
+  if (!loadFonts()) return null;
 
   const pages = [{ name: "index" }, { name: "(tabs)" }];
 
