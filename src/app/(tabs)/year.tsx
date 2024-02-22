@@ -65,9 +65,9 @@ function MonthlyItems({
           <DailyItem date={date} monthlyData={monthlyData} />
         )}
         ListFooterComponent={() => (
-          <View className="py-2">
+          <Pressable className="py-2">
             <Plus color={"white"} size={16} />
-          </View>
+          </Pressable>
         )}
       />
     </View>
