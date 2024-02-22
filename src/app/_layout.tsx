@@ -1,31 +1,29 @@
 import "@/global.css";
-import { fontsLoaded } from "@/lib/fonts";
-import { useTheme } from "@/lib/theme";
+import { loadFonts } from "@/lib/font";
 import { SplashScreen, Stack } from "expo-router";
+import colors from "tailwindcss/colors";
 
 SplashScreen.preventAutoHideAsync(); // hidden on font load
 
 export default function Layout() {
-  const bg_color = useTheme((state) => state.bg_color);
-  if (!fontsLoaded()) return null;
+  if (!loadFonts()) return null
 
-  const pages = [
-    { name: "index", title: "" },
-    { name: "(tabs)", title: "" },
-  ];
+  const pages = [{ name: "index" }, { name: "(tabs)" }];
 
   return (
     <Stack
       screenOptions={{
+        statusBarStyle: "light",
         statusBarTranslucent: true,
         headerShown: false,
         contentStyle: {
-          backgroundColor: bg_color,
+          backgroundColor: colors.neutral[900],
+          flex: 1,
         },
       }}
     >
-      {pages.map(({ name, title, ...others }, i) => (
-        <Stack.Screen name={name} options={{ title, ...others }} key={i} />
+      {pages.map(({ name, ...others }, i) => (
+        <Stack.Screen name={name} options={{ ...others }} key={i} />
       ))}
     </Stack>
   );

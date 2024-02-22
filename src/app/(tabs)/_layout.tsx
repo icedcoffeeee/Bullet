@@ -1,49 +1,44 @@
-import { COLORS, THEME, useTheme } from "@/lib/theme";
-import { Ionicons } from "@expo/vector-icons";
+import { icons } from "lucide-react-native";
 import { Tabs } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import colors from "tailwindcss/colors";
 
 export default function Layout() {
-  const { theme, bg_color, tx_color } = useTheme(
-    ({ theme, bg_color, tx_color }) => ({ theme, bg_color, tx_color }),
-  );
   const { top } = useSafeAreaInsets();
 
-  const pages: {
-    name: string;
-    title: string;
-    icon: keyof typeof Ionicons.glyphMap;
-  }[] = [
-    { name: "index", title: "Daily", icon: "sunny" },
-    { name: "month", title: "Month", icon: "moon" },
-    { name: "year", title: "Year", icon: "calendar" },
-    { name: "settings", title: "Settings", icon: "settings" },
+  const pages: { name: string; icon: keyof typeof icons }[] = [
+    { name: "day", icon: "Sun" },
+    { name: "month", icon: "Moon" },
+    { name: "year", icon: "Star" },
   ];
 
   return (
     <Tabs
-      sceneContainerStyle={{
-        padding: 20,
-        paddingTop: 20 + top,
-        backgroundColor: bg_color,
-      }}
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: tx_color,
+        tabBarShowLabel: false,
         tabBarStyle: {
-          backgroundColor: COLORS.primary[theme === "light" ? 700 : 300],
+          backgroundColor: colors.neutral[800],
           borderTopWidth: 0,
         },
-        tabBarLabelStyle: { fontFamily: THEME.fontFamily.sans[0] },
+        tabBarActiveTintColor: "white",
+        tabBarInactiveTintColor: colors.neutral[500],
+        tabBarActiveBackgroundColor: colors.neutral[700],
+      }}
+      sceneContainerStyle={{
+        backgroundColor: colors.neutral[900],
+        padding: 20,
+        paddingTop: 20 + top,
       }}
     >
-      {pages.map(({ name, title, icon }, i) => (
+      {pages.map(({ name, icon }, i) => (
         <Tabs.Screen
           name={name}
           options={{
-            title,
+            title: name,
             tabBarIcon({ color, size }) {
-              return <Ionicons name={icon} color={color} size={size} />;
+              const Icon = icons[icon];
+              return <Icon color={color} size={size} />;
             },
           }}
           key={i}

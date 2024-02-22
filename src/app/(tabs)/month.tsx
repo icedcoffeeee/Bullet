@@ -1,14 +1,10 @@
-import { Text, View } from "react-native";
+import { Text } from "@/components/ui";
+import { View } from "react-native";
 
 export default function Page() {
   return (
     <View>
-      <Text className="text-primary text-3xl">
-        {new Date().toLocaleDateString("en-US", {
-          month: "long",
-          year: "numeric",
-        })}
-      </Text>
+      <Text className="text-xl">Month</Text>
     </View>
   );
 }
