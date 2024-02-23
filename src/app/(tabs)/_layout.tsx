@@ -1,5 +1,5 @@
-import { icons } from "lucide-react-native";
 import { Tabs } from "expo-router";
+import { icons } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import colors from "tailwindcss/colors";
 

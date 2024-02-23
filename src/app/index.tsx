@@ -1,19 +1,19 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Redirect } from "expo-router";
-import { useEffect, useState } from "react";
+import { router } from "expo-router";
+import { useEffect } from "react";
+import { ActivityIndicator } from "react-native";
 
 export default function Page() {
-  let [loggedIn, setLoggedIn] = useState(false);
-
   useEffect(() => {
-    async function getLoggedInState() {
+    (async function () {
       try {
-        setLoggedIn(!!(await AsyncStorage.getItem("loggedIn")));
-      } catch (error) {}
-    }
-
-    getLoggedInState();
+        const user = await AsyncStorage.getItem("loggedIn");
+        if (!!user) return router.push("/month");
+        return router.push("/login");
+      } catch (error) {
+        console.log("Could not read login");
+      }
+    })();
   }, []);
-
-  return <Redirect href={loggedIn ? "/day" : "/login"} />;
+  return <ActivityIndicator size={20} color={"white"} />;
 }

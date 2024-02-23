@@ -1,4 +1,5 @@
 import { Text } from "@/components/ui";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { Eye } from "lucide-react-native";
 import { useState } from "react";
@@ -40,7 +41,7 @@ export default function Page() {
         </Pressable>
       </View>
 
-      <LoginButton />
+      <LoginButton email={email} />
 
       <TouchableOpacity>
         <Text className="self-center underline">or continue as guest</Text>
@@ -58,24 +59,32 @@ function LoginInput({ className, ...props }: TextInputProps) {
   );
 }
 
-function LoginButton({ className, ...props }: PressableProps) {
+function LoginButton({
+  email,
+  className,
+  ...props
+}: { email: string } & PressableProps) {
   const [loading, setLoading] = useState(false);
 
   return (
     <Pressable
-      onPress={() => {
+      onPress={async () => {
         if (loading) return;
         setLoading(true);
-        setTimeout(() => {
-          setLoading(false);
-          router.push("day");
-        }, 1000);
+        try {
+          await AsyncStorage.setItem("loggedIn", email);
+          router.push("/day");
+        } catch (e) {
+          console.log("Could not store login");
+        }
+        setLoading(false);
       }}
       className={twMerge(
         "bg-neutral-500 p-3 max-w-min rounded items-center",
         className,
       )}
       style={{ opacity: loading ? 0.5 : 1 }}
+      {...props}
     >
       <Text>
         {loading ? <ActivityIndicator size={19} color={"white"} /> : "Log In"}
