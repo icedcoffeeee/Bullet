@@ -8,7 +8,7 @@ export default function Page() {
     (async function () {
       try {
         const user = await AsyncStorage.getItem("loggedIn");
-        if (!!user) return router.push("/month");
+        if (!!user) return router.push("/day");
         return router.push("/login");
       } catch (error) {
         console.log("Could not read login");
