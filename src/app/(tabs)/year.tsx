@@ -1,15 +1,13 @@
 import { Item } from "@/components/items";
 import { AddButton, Text } from "@/components/ui";
-import { Data, data } from "@/lib/data";
+import { Data, data, getYearlyData } from "@/lib/data";
 import { ArrowLeftSquare, ArrowRightSquare } from "lucide-react-native";
 import { useState } from "react";
 import { FlatList, Pressable, View } from "react-native";
 
 export default function Page() {
   const [year, setYear] = useState(new Date().getFullYear());
-  const yearlyData = data.filter(
-    (v) => v.date.getFullYear() === year && v.page === "Y"
-  );
+  const yearlyData = getYearlyData(year);
 
   return (
     <View className="flex-1">
@@ -78,12 +76,10 @@ export function DailyItem({
   date,
   offset,
   monthlyData,
-  plus,
 }: {
   date: number;
   offset: number;
   monthlyData: Data[];
-  plus?: boolean;
 }) {
   const day = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"][
     (date + offset - 2) % 7
@@ -93,11 +89,7 @@ export function DailyItem({
     <View className="flex-row gap-2">
       <Text className="w-6 text-right">{date}</Text>
       <Text className="w-8 border-r border-neutral-500/30">{day}</Text>
-      <FlatList
-        data={data}
-        renderItem={({ item }) => <Item item={item} />}
-        ListFooterComponent={plus && <AddButton />}
-      />
+      <FlatList data={data} renderItem={Item} />
     </View>
   );
 }

@@ -31,16 +31,19 @@ export const data: Data[] = rawdata
       });
 
       return { ...v, children };
-    },
+    }
   );
 
 export function getYearlyData(year: number) {
-  return data.filter((v) => v.date.getFullYear() === year);
+  return data.filter((v) => v.date.getFullYear() === year && v.page === "Y");
 }
 
 export function getMonthlyData(month: number, year: number) {
   return data.filter(
-    (v) => v.date.getFullYear() === year && v.date.getMonth() === month,
+    (v) =>
+      v.date.getFullYear() === year &&
+      v.date.getMonth() === month &&
+      v.page === "M"
   );
 }
 
@@ -49,6 +52,6 @@ export function getDailyData(date: number, month: number, year: number) {
     (v) =>
       v.date.getFullYear() === year &&
       v.date.getMonth() === month &&
-      v.date.getFullYear() === date,
+      v.date.getDate() === date
   );
 }
