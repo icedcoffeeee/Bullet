@@ -43,7 +43,7 @@ function MonthlyItems({
   const uniqueDates = monthlyData
     .filter(
       (v, i, a) =>
-        a.findIndex((w) => w.date.getDate() === v.date.getDate()) === i
+        a.findIndex((w) => w.date.getDate() === v.date.getDate()) === i,
     )
     .map((v) => v.date.getDate());
   const weekdayOffset = new Date(year, month, 1).getDate();

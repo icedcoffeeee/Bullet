@@ -1,10 +1,13 @@
 import { Text } from "@/components/ui";
+import { supabase } from "@/lib/db";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthError } from "@supabase/supabase-js";
 import { router } from "expo-router";
 import { Eye } from "lucide-react-native";
 import { useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Pressable,
   PressableProps,
   TextInput,
@@ -41,9 +44,10 @@ export default function Page() {
         </Pressable>
       </View>
 
-      <LoginButton email={email} />
+      <LoginButton email={email} password={password} />
+      <LoginButton email={email} password={password} signUp />
 
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => router.push("/day")}>
         <Text className="self-center underline">or continue as guest</Text>
       </TouchableOpacity>
     </View>
@@ -61,34 +65,74 @@ function LoginInput({ className, ...props }: TextInputProps) {
 
 function LoginButton({
   email,
+  password,
+  signUp,
   className,
   ...props
-}: { email: string } & PressableProps) {
+}: {
+  email: string;
+  password: string;
+  signUp?: boolean;
+} & PressableProps) {
   const [loading, setLoading] = useState(false);
+
+  let label = "Log In";
+  let authFunc = signInWithEmail;
+
+  if (signUp) {
+    label = "Sign Up";
+    authFunc = signUpWithEmail;
+  }
 
   return (
     <Pressable
       onPress={async () => {
-        if (loading) return;
+        if (loading) return; // ignore
         setLoading(true);
         try {
-          await AsyncStorage.setItem("loggedIn", email);
+          await authFunc(email, password);
+          await AsyncStorage.setItem("user", email);
           router.push("/day");
         } catch (e) {
-          console.log("Could not store login");
+          if (e instanceof AuthError) Alert.alert("Auth Error", e.message);
+          else if (e instanceof Error) Alert.alert("Error", e.message);
+          else Alert.alert("Error", e);
         }
         setLoading(false);
       }}
       className={twMerge(
         "bg-neutral-500 p-3 max-w-min rounded items-center",
+        signUp && "bg-blue-800",
         className,
       )}
       style={{ opacity: loading ? 0.5 : 1 }}
       {...props}
     >
       <Text>
-        {loading ? <ActivityIndicator size={19} color={"white"} /> : "Log In"}
+        {loading ? <ActivityIndicator size={19} color={"white"} /> : label}
       </Text>
     </Pressable>
   );
+}
+
+async function signInWithEmail(email: string, password: string) {
+  const { error } = await supabase.auth.signInWithPassword({
+    email: email,
+    password: password,
+  });
+
+  if (error) throw error;
+}
+
+async function signUpWithEmail(email: string, password: string) {
+  const {
+    data: { session },
+    error,
+  } = await supabase.auth.signUp({
+    email: email,
+    password: password,
+  });
+
+  if (error) throw error;
+  if (!session) throw Error("Please check your inbox for email verification!");
 }

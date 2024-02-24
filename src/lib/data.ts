@@ -31,7 +31,7 @@ export const data: Data[] = rawdata
       });
 
       return { ...v, children };
-    }
+    },
   );
 
 export function getYearlyData(year: number) {
@@ -43,7 +43,7 @@ export function getMonthlyData(month: number, year: number) {
     (v) =>
       v.date.getFullYear() === year &&
       v.date.getMonth() === month &&
-      v.page === "M"
+      v.page === "M",
   );
 }
 
@@ -52,6 +52,6 @@ export function getDailyData(date: number, month: number, year: number) {
     (v) =>
       v.date.getFullYear() === year &&
       v.date.getMonth() === month &&
-      v.date.getDate() === date
+      v.date.getDate() === date,
   );
 }
