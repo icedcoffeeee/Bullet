@@ -3,7 +3,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "module": "ES2022",
+    "target": "ES2022"
   },
   "extends": "expo/tsconfig.base",
   "include": ["global.d.ts", "**/*.ts", "**/*.tsx"]

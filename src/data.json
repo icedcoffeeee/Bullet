@@ -3,56 +3,56 @@
     "id": 1,
     "type": "C",
     "content": "Meeting at 9",
-    "page": "D",
+    "plan": false,
     "dateString": "2024-02-22",
     "childrenIds": [2]
   },
   {
     "id": 2,
     "type": "T",
-    "page": "D",
+    "plan": false,
     "dateString": "2024-02-22",
     "content": "Minutes due"
   },
   {
     "id": 3,
     "type": "C",
-    "page": "D",
+    "plan": false,
     "dateString": "2024-02-22",
     "content": "Follow up on venue"
   },
   {
     "id": 4,
     "type": "C",
-    "page": "D",
+    "plan": false,
     "dateString": "2024-02-22",
     "content": "Setup with technical team"
   },
   {
     "id": 5,
     "type": "T",
-    "page": "D",
+    "plan": false,
     "dateString": "2024-02-22",
     "content": "Site visit"
   },
   {
     "id": 6,
     "type": "N",
-    "page": "D",
+    "plan": false,
     "dateString": "2024-02-22",
     "content": "Might need to confirm with Josh"
   },
   {
     "id": 7,
     "type": "N",
-    "page": "M",
+    "plan": true,
     "dateString": "2024-02-23",
     "content": "Birthday party"
   },
   {
     "id": 8,
     "type": "N",
-    "page": "Y",
+    "plan": true,
     "dateString": "2024-02-24",
     "content": "Holiday"
   }
