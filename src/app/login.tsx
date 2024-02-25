@@ -1,5 +1,7 @@
 import { Text } from "@/components/ui";
 import { supabase } from "@/lib/db";
+import { setupDB } from "@/lib/rxdb";
+import { useDB } from "@/lib/stores/dbStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthError } from "@supabase/supabase-js";
 import { router } from "expo-router";
@@ -75,6 +77,7 @@ function LoginButton({
   signUp?: boolean;
 } & PressableProps) {
   const [loading, setLoading] = useState(false);
+  const { setDB } = useDB(({ setDB }) => ({ setDB }));
 
   let label = "Log In";
   let authFunc = signInWithEmail;
@@ -87,10 +90,11 @@ function LoginButton({
   return (
     <Pressable
       onPress={async () => {
-        if (loading) return; // ignore
+        if (loading) return; // ignore button mash
         setLoading(true);
         try {
           await authFunc(email, password);
+          await setupDB(setDB);
           await AsyncStorage.setItem("user", email);
           router.push("/day");
         } catch (e) {
@@ -103,7 +107,7 @@ function LoginButton({
       className={twMerge(
         "bg-neutral-500 p-3 max-w-min rounded items-center",
         signUp && "bg-blue-800",
-        className,
+        className
       )}
       style={{ opacity: loading ? 0.5 : 1 }}
       {...props}

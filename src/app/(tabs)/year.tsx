@@ -1,13 +1,16 @@
 import { Item } from "@/components/items";
 import { AddButton, Text } from "@/components/ui";
-import { Data, data, getYearlyData } from "@/lib/data";
+import { Data, getYearlyData, updateData } from "@/lib/data";
 import { ArrowLeftSquare, ArrowRightSquare } from "lucide-react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FlatList, Pressable, View } from "react-native";
 
 export default function Page() {
   const [year, setYear] = useState(new Date().getFullYear());
-  const yearlyData = getYearlyData(year);
+  const [data, setData] = useState<Data[]>([]);
+  useEffect(updateData(setData), []);
+
+  const yearlyData = getYearlyData(data, year);
 
   return (
     <View className="flex-1">
@@ -43,7 +46,7 @@ function MonthlyItems({
   const uniqueDates = monthlyData
     .filter(
       (v, i, a) =>
-        a.findIndex((w) => w.date.getDate() === v.date.getDate()) === i,
+        a.findIndex((w) => w.date.getDate() === v.date.getDate()) === i
     )
     .map((v) => v.date.getDate());
   const weekdayOffset = new Date(year, month, 1).getDate();

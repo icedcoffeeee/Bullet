@@ -1,20 +1,15 @@
-import { DocType, getDB } from "@/lib/rxdb";
-import { removeItem } from "./utils/arrayUtils";
 import { Dispatch, SetStateAction } from "react";
 import { Subscription } from "rxjs";
+import { DocType } from "./rxdb";
+import { useDB } from "./stores/dbStore";
+import { removeItem } from "./utils/arrayUtils";
 
-export interface Data {
-  id: number;
-  type: string;
-  content: string;
-  dateString: string;
-  plan: boolean;
-  childrenIds?: number[];
+export type Data = DocType & {
   date: Date;
   children?: Data[];
-}
+};
 
-export function parseData(u: DocType[]) {
+export function parseData(u: DocType[]): Data[] {
   return u
     .map((v) => ({
       date: new Date(v.dateString),
@@ -39,12 +34,11 @@ export function parseData(u: DocType[]) {
 }
 
 export function updateData(setData: Dispatch<SetStateAction<Data[]>>) {
+  const { DB } = useDB(({ DB }) => ({ DB }));
   return function () {
     let sub: Subscription;
     (async function () {
-      sub = (await getDB())
-        .find()
-        .$.subscribe((data) => setData(parseData(data)));
+      if (DB) sub = DB.find().$.subscribe((data) => setData(parseData(data)));
     })();
     return () => {
       if (sub && sub.unsubscribe) sub.unsubscribe();
@@ -53,13 +47,13 @@ export function updateData(setData: Dispatch<SetStateAction<Data[]>>) {
 }
 
 export function getYearlyData(data: Data[], year: number) {
-  return data.filter((v) => v.date.getFullYear() === year && v.plan);
+  return data.filter((v) => v.date.getFullYear() === year && v.planned);
 }
 
 export function getMonthlyData(data: Data[], month: number, year: number) {
   return data.filter(
     (v) =>
-      v.date.getFullYear() === year && v.date.getMonth() === month && v.plan
+      v.date.getFullYear() === year && v.date.getMonth() === month && v.planned
   );
 }
 
