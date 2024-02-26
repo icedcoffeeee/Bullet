@@ -1,5 +1,5 @@
-import { Item } from "@/components/items";
-import { AddButton, Text } from "@/components/ui";
+import { AddButton, Item } from "@/components/items";
+import { Text } from "@/components/ui";
 import { Data, getYearlyData, updateData } from "@/lib/data";
 import { ArrowLeftSquare, ArrowRightSquare } from "lucide-react-native";
 import { useEffect, useState } from "react";
@@ -46,7 +46,7 @@ function MonthlyItems({
   const uniqueDates = monthlyData
     .filter(
       (v, i, a) =>
-        a.findIndex((w) => w.date.getDate() === v.date.getDate()) === i
+        a.findIndex((w) => w.date.getDate() === v.date.getDate()) === i,
     )
     .map((v) => v.date.getDate());
   const weekdayOffset = new Date(year, month, 1).getDate();

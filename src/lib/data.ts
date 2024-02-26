@@ -3,17 +3,18 @@ import { Subscription } from "rxjs";
 import { DocType } from "./rxdb";
 import { useDB } from "./stores/dbStore";
 import { removeItem } from "./utils/arrayUtils";
+import { RxDocument } from "rxdb";
 
 export type Data = DocType & {
   date: Date;
   children?: Data[];
 };
 
-export function parseData(u: DocType[]): Data[] {
+export function parseData(u: RxDocument<DocType>[]): Data[] {
   return u
     .map((v) => ({
+      ...v._data,
       date: new Date(v.dateString),
-      ...v,
     }))
     .map(
       /// This parses childrenIds (w) to a children attribute which
@@ -29,16 +30,20 @@ export function parseData(u: DocType[]): Data[] {
         });
 
         return { ...v, children };
-      }
+      },
     );
 }
 
 export function updateData(setData: Dispatch<SetStateAction<Data[]>>) {
-  const { DB } = useDB(({ DB }) => ({ DB }));
+  const { DB } = useDB(({ db: DB }) => ({ DB }));
   return function () {
     let sub: Subscription;
     (async function () {
-      if (DB) sub = DB.find().$.subscribe((data) => setData(parseData(data)));
+      if (DB)
+        sub = DB.find().$.subscribe((data) => {
+          setData(parseData(data));
+          // console.log(parseData(data));
+        });
     })();
     return () => {
       if (sub && sub.unsubscribe) sub.unsubscribe();
@@ -53,7 +58,7 @@ export function getYearlyData(data: Data[], year: number) {
 export function getMonthlyData(data: Data[], month: number, year: number) {
   return data.filter(
     (v) =>
-      v.date.getFullYear() === year && v.date.getMonth() === month && v.planned
+      v.date.getFullYear() === year && v.date.getMonth() === month && v.planned,
   );
 }
 
@@ -61,12 +66,12 @@ export function getDailyData(
   data: Data[],
   date: number,
   month: number,
-  year: number
+  year: number,
 ) {
   return data.filter(
     (v) =>
       v.date.getFullYear() === year &&
       v.date.getMonth() === month &&
-      v.date.getDate() === date
+      v.date.getDate() === date,
   );
 }

@@ -1,17 +1,17 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RxCollection } from "rxdb";
 import { create } from "zustand";
+import { PersistStorage, createJSONStorage, persist } from "zustand/middleware";
 import { DocType } from "../rxdb";
 
 export type DB = {
-  DB: RxCollection<DocType> | null;
-  setDB: (DB: RxCollection<DocType>) => void;
+  db: RxCollection<DocType> | null;
+  setDB: (db: RxCollection<DocType>) => void;
 };
 
-export const useDB = create<DB>(function (set) {
-  return {
-    DB: null,
-    setDB(DB) {
-      set(() => ({ DB }));
-    },
-  };
-});
+export const useDB = create<DB>((set) => ({
+  db: null,
+  setDB(db) {
+    set({ db });
+  },
+}));

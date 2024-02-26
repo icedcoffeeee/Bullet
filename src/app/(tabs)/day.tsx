@@ -1,13 +1,14 @@
-import { Item } from "@/components/items";
-import { AddButton, Text } from "@/components/ui";
+import { AddButton, Item } from "@/components/items";
+import { Text } from "@/components/ui";
 import { Data, getDailyData, updateData } from "@/lib/data";
+import { DB } from "@/lib/stores/dbStore";
 import { Link } from "expo-router";
 import { Settings } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
 
 export default function Page() {
-  const today = new Date(2024, 1, 22);
+  const today = new Date();
   const [data, setData] = useState<Data[]>([]);
 
   useEffect(updateData(setData), []);
@@ -37,8 +38,19 @@ export default function Page() {
       <FlatList
         data={dailyData}
         renderItem={Item}
-        ListFooterComponent={<AddButton />}
+        ListFooterComponent={<AddButton dbFunction={addItem} />}
       />
     </View>
   );
+}
+
+function addItem(db: DB["db"]) {
+  return async function () {
+    await db.insert({
+      type: "T",
+      content: "",
+      dateString: new Date().toISOString(),
+      planned: false,
+    });
+  };
 }

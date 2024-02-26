@@ -11,7 +11,6 @@
   "dependencies": {
     "@expo-google-fonts/josefin-sans": "^0.2.3",
     "@react-native-async-storage/async-storage": "1.21.0",
-    "@shopify/flash-list": "1.6.3",
     "@supabase/supabase-js": "^2.39.7",
     "expo": "^50.0.1",
     "expo-constants": "~15.4.2",
@@ -35,8 +34,8 @@
     "rxdb-supabase": "^1.0.4",
     "tailwind-merge": "^2.2.1",
     "tailwindcss": "^3.4.0",
-    "zustand": "^4.5.1",
-    "undefined": "rxdb/plugins/storage-lokijs"
+    "undefined": "rxdb/plugins/storage-lokijs",
+    "zustand": "^4.5.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

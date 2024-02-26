@@ -1,7 +1,9 @@
 import { Text } from "@/components/ui";
-import { Data, data } from "@/lib/data";
-import { icons } from "lucide-react-native";
-import { FlatList, Pressable, View } from "react-native";
+import { Data } from "@/lib/data";
+import { DB, useDB } from "@/lib/stores/dbStore";
+import { Plus, icons } from "lucide-react-native";
+import { FlatList, Pressable, PressableProps, View } from "react-native";
+import { twMerge } from "tailwind-merge";
 
 export function Item({ item }: { item: Data }) {
   return (
@@ -36,6 +38,25 @@ function ItemIcon({ type }: { type: string }) {
   return (
     <Pressable>
       <Icon color={"white"} size={16} />
+    </Pressable>
+  );
+}
+
+export function AddButton({
+  className,
+  dbFunction,
+  ...props
+}: PressableProps & {
+  dbFunction?: (DB: DB["db"]) => PressableProps["onPress"];
+}) {
+  const { db } = useDB(({ db }) => ({ db }));
+  return (
+    <Pressable
+      className={twMerge("py-2", className)}
+      onPress={dbFunction && dbFunction(db)}
+      {...props}
+    >
+      <Plus color={"white"} size={16} />
     </Pressable>
   );
 }

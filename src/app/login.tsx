@@ -94,7 +94,7 @@ function LoginButton({
         setLoading(true);
         try {
           await authFunc(email, password);
-          await setupDB(setDB);
+          setDB(await setupDB());
           await AsyncStorage.setItem("user", email);
           router.push("/day");
         } catch (e) {
@@ -107,7 +107,7 @@ function LoginButton({
       className={twMerge(
         "bg-neutral-500 p-3 max-w-min rounded items-center",
         signUp && "bg-blue-800",
-        className
+        className,
       )}
       style={{ opacity: loading ? 0.5 : 1 }}
       {...props}
