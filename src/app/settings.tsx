@@ -1,4 +1,5 @@
 import { Text } from "@/components/ui";
+import { deleteDB } from "@/lib/rxdb";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { icons } from "lucide-react-native";
@@ -28,7 +29,9 @@ function LogInOutButton() {
       label={logged ? "Log out" : "Log in"}
       icon={logged ? "LogOut" : "LogIn"}
       onPress={async () => {
-        if (logged) await AsyncStorage.removeItem("user");
+        if (logged) {
+          await AsyncStorage.removeItem("user");
+        }
         router.push("/");
       }}
     />
@@ -47,7 +50,7 @@ function SettingButton({
       {...props}
       className={twMerge(
         "bg-neutral-800 p-2 rounded flex-row items-center gap-3",
-        className,
+        className
       )}
     >
       <Icon size={20} color={"white"} />

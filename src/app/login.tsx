@@ -1,7 +1,7 @@
 import { Text } from "@/components/ui";
-import { supabase } from "@/lib/db";
-import { setupDB } from "@/lib/rxdb";
+import { DocType, getCollection, initializeRxDB } from "@/lib/rxdb";
 import { useDB } from "@/lib/stores/dbStore";
+import { supabase } from "@/lib/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthError } from "@supabase/supabase-js";
 import { router } from "expo-router";
@@ -17,12 +17,20 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { RxCollection, RxDatabase, RxError } from "rxdb";
 import { twMerge } from "tailwind-merge";
+
+type Auth = {
+  email: string;
+  password: string;
+};
 
 export default function Page() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
+
+  const auth: Auth = { email, password };
 
   return (
     <View className="p-[20px] flex-1 justify-center gap-3">
@@ -46,8 +54,8 @@ export default function Page() {
         </Pressable>
       </View>
 
-      <LoginButton email={email} password={password} />
-      <LoginButton email={email} password={password} signUp />
+      <LoginButton auth={auth} />
+      <LoginButton auth={auth} signup />
 
       <TouchableOpacity onPress={() => router.push("/day")}>
         <Text className="self-center underline">or continue as guest</Text>
@@ -66,50 +74,47 @@ function LoginInput({ className, ...props }: TextInputProps) {
 }
 
 function LoginButton({
-  email,
-  password,
-  signUp,
-  className,
+  auth,
+  signup,
   ...props
 }: {
-  email: string;
-  password: string;
-  signUp?: boolean;
+  auth: Auth;
+  signup?: boolean;
 } & PressableProps) {
   const [loading, setLoading] = useState(false);
-  const { setDB } = useDB(({ setDB }) => ({ setDB }));
-
-  let label = "Log In";
-  let authFunc = signInWithEmail;
-
-  if (signUp) {
-    label = "Sign Up";
-    authFunc = signUpWithEmail;
-  }
+  const label = signup ? "Sign Up" : "Log In";
+  const setDB = useDB((s) => s.setDB);
 
   return (
     <Pressable
-      onPress={async () => {
-        if (loading) return; // ignore button mash
+      onPress={async function login() {
+        if (loading) return;
         setLoading(true);
+
         try {
-          await authFunc(email, password);
-          setDB(await setupDB());
-          await AsyncStorage.setItem("user", email);
+          await signin(auth);
+
+          const rxdb = await initializeRxDB(auth.email);
+          const user = await getCollection(rxdb);
+          setDB(rxdb, user);
+
+          await AsyncStorage.setItem("user", auth.email);
+
           router.push("/day");
         } catch (e) {
-          if (e instanceof AuthError) Alert.alert("Auth Error", e.message);
-          else if (e instanceof Error) Alert.alert("Error", e.message);
-          else Alert.alert("Error", e);
+          if (e instanceof AuthError) Alert.alert(e.name, e.message);
+          if (e instanceof Object)
+            router.push("/day"); // already has a local db
+          else console.log(e);
         }
+
         setLoading(false);
       }}
       className={twMerge(
         "bg-neutral-500 p-3 max-w-min rounded items-center",
-        signUp && "bg-blue-800",
-        className,
+        signup && "bg-blue-800",
+        loading && "opacity-50"
       )}
-      style={{ opacity: loading ? 0.5 : 1 }}
       {...props}
     >
       <Text>
@@ -119,24 +124,16 @@ function LoginButton({
   );
 }
 
-async function signInWithEmail(email: string, password: string) {
-  const { error } = await supabase.auth.signInWithPassword({
-    email: email,
-    password: password,
-  });
-
-  if (error) throw error;
-}
-
-async function signUpWithEmail(email: string, password: string) {
-  const {
-    data: { session },
-    error,
-  } = await supabase.auth.signUp({
-    email: email,
-    password: password,
-  });
-
-  if (error) throw error;
-  if (!session) throw Error("Please check your inbox for email verification!");
+async function signin(auth: Auth, signup?: boolean) {
+  if (!signup) {
+    // Sign in with supabase
+    const { error } = await supabase.auth.signInWithPassword(auth);
+    if (error) throw error;
+  } else {
+    // Register an account
+    const { data, error } = await supabase.auth.signUp(auth);
+    if (error) throw error;
+    if (!data.session)
+      new Error("Please check your inbox for email verification!");
+  }
 }

@@ -1,4 +1,4 @@
-import { setupDB } from "@/lib/rxdb";
+import { initializeRxDB } from "@/lib/rxdb";
 import { useDB } from "@/lib/stores/dbStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
@@ -17,7 +17,7 @@ export default function Page() {
       }
       if (!!user) {
         try {
-          setDB(await setupDB());
+          setDB(await initializeRxDB());
         } catch (error) {
           console.log(error.message);
         }

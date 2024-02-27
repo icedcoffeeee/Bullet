@@ -8,7 +8,7 @@ import {
   createRxDatabase,
   removeRxDatabase,
 } from "rxdb";
-import { getRxStorageLoki } from "rxdb/plugins/storage-lokijs";
+import { getLokiDatabase, getRxStorageLoki } from "rxdb/plugins/storage-lokijs";
 
 export interface DocType {
   id?: string;
@@ -39,30 +39,17 @@ const schema: RxJsonSchema<DocType> = {
   indexes: ["dateString"],
 };
 
-export async function setupDB() {
+export async function initializeRxDB(name: string) {
   let rxdb: RxDatabase;
-  const opts: LokiDatabaseSettings = {
-    autoload: true,
-    autoloadCallback() {},
-    autosave: true,
-    autosaveInterval: 5 * 1000,
-  };
   try {
-    rxdb = await createRxDatabase({
-      name: "user",
-      storage: getRxStorageLoki(opts),
-      multiInstance: false,
-    });
-    console.log("generated new db");
+    rxdb = await createDB(name);
   } catch (e) {
-    if (e instanceof RxError) {
-      // currently another rxdb instance
-      await removeRxDatabase("user", getRxStorageLoki(opts));
-      console.log("removed prev instance");
-      return;
-    } else if (e instanceof Error) console.log(e.message);
+    if (e instanceof Error) console.log(e.message);
   }
 
+  return rxdb;
+}
+export async function getCollection(rxdb: RxDatabase) {
   const rxcollections: { user: RxCollection<DocType> } =
     await rxdb.addCollections({
       user: { schema },
@@ -79,3 +66,25 @@ export async function setupDB() {
 
   return userDB;
 }
+
+export async function createDB(name: string) {
+  const db = await createRxDatabase({
+    name,
+    storage: getRxStorageLoki(opts),
+    multiInstance: false,
+  });
+  console.log("generated new db");
+  return db;
+}
+
+export async function deleteDB(name: string) {
+  await removeRxDatabase(name, getRxStorageLoki(opts));
+  console.log("deleted prev db");
+}
+
+const opts: LokiDatabaseSettings = {
+  autoload: true,
+  autoloadCallback() {},
+  autosave: true,
+  autosaveInterval: 5 * 1000,
+};

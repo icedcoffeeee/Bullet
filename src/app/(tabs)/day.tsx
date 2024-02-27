@@ -17,7 +17,7 @@ export default function Page() {
     data,
     today.getDate(),
     today.getMonth(),
-    today.getFullYear(),
+    today.getFullYear()
   );
 
   return (
@@ -44,9 +44,9 @@ export default function Page() {
   );
 }
 
-function addItem(db: DB["db"]) {
+function addItem(user: DB["user"]) {
   return async function () {
-    await db.insert({
+    await user.insert({
       type: "T",
       content: "",
       dateString: new Date().toISOString(),

@@ -47,13 +47,13 @@ export function AddButton({
   dbFunction,
   ...props
 }: PressableProps & {
-  dbFunction?: (DB: DB["db"]) => PressableProps["onPress"];
+  dbFunction?: (user: DB["user"]) => PressableProps["onPress"];
 }) {
-  const { db } = useDB(({ db }) => ({ db }));
+  const { user } = useDB(({ user }) => ({ user }));
   return (
     <Pressable
       className={twMerge("py-2", className)}
-      onPress={dbFunction && dbFunction(db)}
+      onPress={dbFunction && dbFunction(user)}
       {...props}
     >
       <Plus color={"white"} size={16} />
