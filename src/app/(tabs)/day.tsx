@@ -17,7 +17,7 @@ export default function Page() {
     data,
     today.getDate(),
     today.getMonth(),
-    today.getFullYear()
+    today.getFullYear(),
   );
 
   return (

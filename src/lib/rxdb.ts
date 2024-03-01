@@ -3,12 +3,11 @@ import {
   LokiDatabaseSettings,
   RxCollection,
   RxDatabase,
-  RxError,
   RxJsonSchema,
   createRxDatabase,
   removeRxDatabase,
 } from "rxdb";
-import { getLokiDatabase, getRxStorageLoki } from "rxdb/plugins/storage-lokijs";
+import { getRxStorageLoki } from "rxdb/plugins/storage-lokijs";
 
 export interface DocType {
   id?: string;
@@ -39,42 +38,30 @@ const schema: RxJsonSchema<DocType> = {
   indexes: ["dateString"],
 };
 
-export async function initializeRxDB(name: string) {
-  let rxdb: RxDatabase;
-  try {
-    rxdb = await createDB(name);
-  } catch (e) {
-    if (e instanceof Error) console.log(e.message);
-  }
-
-  return rxdb;
+export async function initializeRxDB() {
+  const db = await createRxDatabase({
+    name: "bulletdb",
+    storage: getRxStorageLoki(opts),
+    multiInstance: false,
+  });
+  console.log("generated new db");
+  return db;
 }
-export async function getCollection(rxdb: RxDatabase) {
-  const rxcollections: { user: RxCollection<DocType> } =
+export async function getCollection(name: string, rxdb: RxDatabase) {
+  try {
     await rxdb.addCollections({
-      user: { schema },
+      [name]: { schema },
     });
-  console.log("collections created");
-  rxdb.collection;
+    console.log("collections created");
+  } catch {}
 
-  const userDB = rxcollections.user;
-  console.log("user collection created");
+  const userDB: RxCollection<DocType> = rxdb.collections[name];
 
   if (!!(await AsyncStorage.getItem("user"))) {
     // supabase replication
   }
 
   return userDB;
-}
-
-export async function createDB(name: string) {
-  const db = await createRxDatabase({
-    name,
-    storage: getRxStorageLoki(opts),
-    multiInstance: false,
-  });
-  console.log("generated new db");
-  return db;
 }
 
 export async function deleteDB(name: string) {

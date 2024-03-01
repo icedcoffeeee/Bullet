@@ -30,7 +30,7 @@ export function parseData(u: RxDocument<DocType>[]): Data[] {
         });
 
         return { ...v, children };
-      }
+      },
     );
 }
 
@@ -42,7 +42,6 @@ export function updateData(setData: Dispatch<SetStateAction<Data[]>>) {
       if (user)
         sub = user.find().$.subscribe((data) => {
           setData(parseData(data));
-          // console.log(parseData(data));
         });
     })();
     return () => {
@@ -58,7 +57,7 @@ export function getYearlyData(data: Data[], year: number) {
 export function getMonthlyData(data: Data[], month: number, year: number) {
   return data.filter(
     (v) =>
-      v.date.getFullYear() === year && v.date.getMonth() === month && v.planned
+      v.date.getFullYear() === year && v.date.getMonth() === month && v.planned,
   );
 }
 
@@ -66,12 +65,12 @@ export function getDailyData(
   data: Data[],
   date: number,
   month: number,
-  year: number
+  year: number,
 ) {
   return data.filter(
     (v) =>
       v.date.getFullYear() === year &&
       v.date.getMonth() === month &&
-      v.date.getDate() === date
+      v.date.getDate() === date,
   );
 }

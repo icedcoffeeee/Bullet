@@ -1,5 +1,5 @@
 import { Text } from "@/components/ui";
-import { DocType, getCollection, initializeRxDB } from "@/lib/rxdb";
+import { getCollection, initializeRxDB } from "@/lib/rxdb";
 import { useDB } from "@/lib/stores/dbStore";
 import { supabase } from "@/lib/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -17,7 +17,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { RxCollection, RxDatabase, RxError } from "rxdb";
 import { twMerge } from "tailwind-merge";
 
 type Auth = {
@@ -31,6 +30,7 @@ export default function Page() {
   const [showPass, setShowPass] = useState(false);
 
   const auth: Auth = { email, password };
+  const { DB, setDB } = useDB();
 
   return (
     <View className="p-[20px] flex-1 justify-center gap-3">
@@ -57,7 +57,23 @@ export default function Page() {
       <LoginButton auth={auth} />
       <LoginButton auth={auth} signup />
 
-      <TouchableOpacity onPress={() => router.push("/day")}>
+      <TouchableOpacity
+        onPress={async () => {
+          let rxdb = DB;
+          try {
+            rxdb = await initializeRxDB();
+          } catch {}
+
+          try {
+            const user = await getCollection("guest", rxdb);
+            setDB(rxdb, user);
+          } catch (e) {
+            console.log(e);
+          }
+
+          router.push("/day");
+        }}
+      >
         <Text className="self-center underline">or continue as guest</Text>
       </TouchableOpacity>
     </View>
@@ -83,29 +99,38 @@ function LoginButton({
 } & PressableProps) {
   const [loading, setLoading] = useState(false);
   const label = signup ? "Sign Up" : "Log In";
-  const setDB = useDB((s) => s.setDB);
+  const { DB, setDB } = useDB();
 
   return (
     <Pressable
-      onPress={async function login() {
+      onPress={async () => {
         if (loading) return;
         setLoading(true);
 
         try {
           await signin(auth);
-
-          const rxdb = await initializeRxDB(auth.email);
-          const user = await getCollection(rxdb);
-          setDB(rxdb, user);
-
-          await AsyncStorage.setItem("user", auth.email);
-
-          router.push("/day");
         } catch (e) {
           if (e instanceof AuthError) Alert.alert(e.name, e.message);
-          if (e instanceof Object)
-            router.push("/day"); // already has a local db
-          else console.log(e);
+        }
+
+        let rxdb = DB;
+        try {
+          rxdb = await initializeRxDB();
+        } catch {}
+
+        try {
+          const user = await getCollection(auth.email, rxdb);
+          setDB(rxdb, user);
+        } catch (e) {
+          console.log(e);
+          router.push("/day");
+        }
+
+        try {
+          await AsyncStorage.setItem("user", auth.email);
+          router.push("/day");
+        } catch (e) {
+          console.log(e);
         }
 
         setLoading(false);

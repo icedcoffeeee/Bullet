@@ -50,7 +50,7 @@ function SettingButton({
       {...props}
       className={twMerge(
         "bg-neutral-800 p-2 rounded flex-row items-center gap-3",
-        className
+        className,
       )}
     >
       <Icon size={20} color={"white"} />
